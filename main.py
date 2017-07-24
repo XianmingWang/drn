@@ -14,7 +14,7 @@ from torch.autograd import Variable
 
 import model
 
-experiment = '../../result/drn/test_8/'
+experiment = '../../result/drn/test_10/'
 model_dirs = experiment+'model/'
 
 # Training settings

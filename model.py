@@ -182,13 +182,15 @@ class rn_model(nn.Module):
         x = conved.view(self.mb,conved_size_channels,conved_size*conved_size).permute(0,2,1)
         
         for rn_depth in range(len(self.rn_config)):
-            temp = range(self.rn_config[rn_depth])
+            temp = None
             for rn_id in range(self.rn_config[rn_depth]):
-                temp[rn_id] = [torch.unsqueeze(self.rn_layer_dic[rn_depth][rn_id](in_=x,aux=qst),1)]
-            if len(temp) is 1:
-                x = torch.cat(temp,1)
-            else:
-                x = torch.squeeze(temp[0],1)
+                if rn_id is 0:
+                    temp = torch.unsqueeze(self.rn_layer_dic[rn_depth][rn_id](in_=x,aux=qst),1)
+                else:
+                    temp = torch.cat([torch.unsqueeze(self.rn_layer_dic[rn_depth][rn_id](in_=x,aux=qst),1),temp],1)
+            x = temp
+        
+        x = torch.squeeze(x,1)
         
         x = self.f_layer(x)
 
