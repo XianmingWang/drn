@@ -14,6 +14,9 @@ from torch.autograd import Variable
 
 import model
 
+experiment = '../../result/drn/test_8/'
+model_dirs = experiment+'model/'
+
 # Training settings
 parser = argparse.ArgumentParser(description='PyTorch MNIST Example')
 parser.add_argument('--batch-size', type=int, default=64, metavar='N',
@@ -28,8 +31,6 @@ parser.add_argument('--seed', type=int, default=1, metavar='S',
                     help='random seed (default: 1)')
 parser.add_argument('--log-interval', type=int, default=10, metavar='N',
                     help='how many batches to wait before logging training status')
-parser.add_argument('--resume', type=str,
-                    help='resume from model stored')
 
 
 args = parser.parse_args()
@@ -40,7 +41,6 @@ if args.cuda:
     torch.cuda.manual_seed(args.seed)
 
 model = model.RN(args)
-model_dirs = './model'
 bs = args.batch_size
 input_img = torch.FloatTensor(bs, 3, 75, 75)
 input_qst = torch.FloatTensor(bs, 11)
@@ -124,7 +124,7 @@ def test(epoch, rel, norel):
     
 def load_data():
     print('loading data...')
-    dirs = './data'
+    dirs = '../drn_data_set'
     filename = os.path.join(dirs,'sort-of-clevr.pickle')
     f = open(filename, 'r')
     train_datasets, test_datasets = pickle.load(f)
@@ -158,15 +158,17 @@ try:
 except:
     print('directory {} already exists'.format(model_dirs))
 
-if args.resume:
-    filename = os.path.join(model_dirs, args.resume)
-    if os.path.isfile(filename):
-        print('==> loading checkpoint {}'.format(filename))
-        checkpoint = torch.load(filename)
-        model.load_state_dict(checkpoint)
-        print('==> loaded checkpoint {}'.format(filename))
+filename = model_dirs + 'model.pth'
+
+try:
+    print('==> loading checkpoint {}'.format(filename))
+    checkpoint = torch.load(filename)
+    model.load_state_dict(checkpoint)
+    print('==> loaded checkpoint {}'.format(filename))
+except:
+    print('==> loading checkpoint failed.')
 
 for epoch in range(1, args.epochs + 1):
     train(epoch, rel_train, norel_train)
     test(epoch, rel_test, norel_test)
-    model.save_model(epoch)
+    model.save_model(filename)
