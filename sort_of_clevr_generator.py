@@ -12,7 +12,7 @@ question_size = 11 ##6 for one-hot vector of color, 2 for question type, 3 for q
 """Answer : [yes, no, rectangle, circle, r, g, b, o, k, y]"""
 
 nb_questions = 10
-dirs = './data'
+dirs = '../drn_data_set'
 
 colors = [
     (0,0,255),##r
